@@ -3,173 +3,213 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Global Trade — Automatisation e-commerce & gestion de commandes</title>
+<title>Global Trade — Automatisation e-commerce & Logistique</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#0A0A0A;
+  --blue:#1A56DB;
+  --blue-light:#EEF2FF;
+  --grey:#6B7280;
+  --border:#E5E7EB;
+  --bg-alt:#F9FAFB;
+  --white:#FFFFFF;
+}
+body{font-family:'Inter',sans-serif;color:var(--black);background:var(--white);font-size:16px;line-height:1.6}
 
-  :root {
-    --ink: #1B2430;
-    --parchment: #E9E2CE;
-    --parchment-light: #F2EEDF;
-    --stamp: #B23A2E;
-    --line: #C9BFA0;
-  }
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:0 5%}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px}
+.nav-logo{font-weight:700;font-size:15px;letter-spacing:-0.3px;color:var(--black)}
+.nav-logo span{color:var(--blue)}
+.nav-contact{font-size:13px;color:var(--grey);font-weight:500}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* HERO */
+.hero{padding:140px 5% 100px;max-width:1100px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:var(--blue);background:var(--blue-light);padding:5px 12px;border-radius:4px;margin-bottom:28px;letter-spacing:0.3px}
+.hero h1{font-size:clamp(36px,5vw,58px);font-weight:700;line-height:1.1;letter-spacing:-1.5px;max-width:720px;margin-bottom:22px}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hero p{font-size:18px;color:var(--grey);max-width:540px;line-height:1.7;font-weight:400;margin-bottom:40px}
+.hero-cta{display:inline-flex;align-items:center;gap:10px;background:var(--black);color:var(--white);font-size:14px;font-weight:600;padding:14px 24px;border-radius:6px;text-decoration:none;transition:background 0.15s}
+.hero-cta:hover{background:#1A1A1A}
+.hero-cta svg{flex-shrink:0}
 
-  body {
-    background: var(--parchment-light);
-    color: var(--ink);
-    font-family: 'Inter', sans-serif;
-    line-height: 1.55;
-  }
+/* SERVICES */
+.services{background:var(--bg-alt);padding:90px 5%}
+.services-inner{max-width:1100px;margin:0 auto}
+.section-label{font-size:11px;font-weight:600;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.services h2{font-size:clamp(26px,3.5vw,38px);font-weight:700;letter-spacing:-0.8px;margin-bottom:60px;max-width:500px;line-height:1.2}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--border)}
+.service{background:var(--white);padding:40px 36px}
+.service-num{font-size:11px;font-weight:700;color:var(--grey);margin-bottom:20px;font-variant-numeric:tabular-nums}
+.service-icon{width:40px;height:40px;background:var(--blue-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:20px}
+.service-icon svg{color:var(--blue)}
+.service h3{font-size:18px;font-weight:700;margin-bottom:10px;letter-spacing:-0.3px}
+.service p{font-size:14px;color:var(--grey);line-height:1.7}
 
-  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+/* PROCESS */
+.process{padding:90px 5%}
+.process-inner{max-width:1100px;margin:0 auto}
+.process h2{font-size:clamp(26px,3.5vw,38px);font-weight:700;letter-spacing:-0.8px;margin-bottom:60px;max-width:500px;line-height:1.2}
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:48px 1fr;gap:24px;padding:28px 0;border-top:1px solid var(--border)}
+.step:last-child{border-bottom:1px solid var(--border)}
+.step-num{font-size:13px;font-weight:700;color:var(--blue);padding-top:3px}
+.step-content h4{font-size:16px;font-weight:600;margin-bottom:6px;letter-spacing:-0.2px}
+.step-content p{font-size:14px;color:var(--grey);line-height:1.7;max-width:560px}
 
-  header {
-    padding: 72px 0 56px;
-    border-bottom: 1px solid var(--line);
-  }
+/* ABOUT */
+.about{background:var(--black);color:var(--white);padding:90px 5%}
+.about-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.about h2{font-size:clamp(26px,3.5vw,38px);font-weight:700;letter-spacing:-0.8px;line-height:1.2;margin-bottom:20px}
+.about p{font-size:15px;color:rgba(255,255,255,0.65);line-height:1.8}
+.about-stats{display:flex;flex-direction:column;gap:32px}
+.stat{border-left:2px solid var(--blue);padding-left:20px}
+.stat-num{font-size:32px;font-weight:700;letter-spacing:-1px;line-height:1}
+.stat-label{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px}
 
-  .mark {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 14px;
-    letter-spacing: 0.02em;
-    color: var(--stamp);
-    margin-bottom: 40px;
-  }
-  .mark::before {
-    content: "";
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--stamp);
-    display: inline-block;
-  }
+/* FOOTER */
+footer{padding:40px 5%;border-top:1px solid var(--border)}
+.footer-inner{max-width:1100px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.footer-brand{font-weight:700;font-size:14px}
+.footer-brand span{color:var(--blue)}
+.footer-info{font-size:12px;color:var(--grey);text-align:right;line-height:1.7}
 
-  h1 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: clamp(34px, 5vw, 52px);
-    line-height: 1.12;
-    max-width: 14ch;
-    margin-bottom: 20px;
-  }
-
-  .lede {
-    font-size: 18px;
-    max-width: 46ch;
-    color: #3A4252;
-  }
-
-  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
-  section:last-of-type { border-bottom: none; }
-
-  h2 {
-    font-family: 'Fraunces', serif;
-    font-weight: 600;
-    font-size: 24px;
-    margin-bottom: 24px;
-  }
-
-  .manifest {
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-  }
-
-  .row {
-    display: grid;
-    grid-template-columns: 88px 1fr;
-    gap: 20px;
-    align-items: baseline;
-  }
-
-  .row .code {
-    font-family: 'Fraunces', serif;
-    font-style: italic;
-    color: var(--stamp);
-    font-size: 15px;
-  }
-
-  .row .desc { font-size: 15.5px; }
-  .row .desc strong { display: block; font-weight: 600; margin-bottom: 2px; font-family: 'Inter', sans-serif; }
-
-  .stack-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 8px;
-  }
-  .stack-list span {
-    font-size: 13.5px;
-    padding: 6px 12px;
-    border: 1px solid var(--line);
-    border-radius: 3px;
-    background: var(--parchment);
-  }
-
-  footer {
-    padding: 48px 0 72px;
-    font-size: 14px;
-    color: #6B6252;
-  }
-
-  footer a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); }
-
-  @media (max-width: 560px) {
-    .row { grid-template-columns: 60px 1fr; }
-    header { padding: 48px 0 40px; }
-  }
+@media(max-width:768px){
+  .services-grid{grid-template-columns:1fr}
+  .about-inner{grid-template-columns:1fr;gap:48px}
+  .footer-inner{flex-direction:column;gap:16px;text-align:center}
+  .footer-info{text-align:center}
+  .step{grid-template-columns:36px 1fr}
+}
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <header>
-    <div class="mark">Global Trade — Entrepreneur individuel, France</div>
-    <h1>La logistique e-commerce qui ne dort jamais.</h1>
-    <p class="lede">Conception et développement de systèmes d'automatisation pour la synchronisation de commandes, la gestion de stock et le traitement multicanal — TikTok Shop, Whatnot et au-delà.</p>
-  </header>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo">Global<span>Trade</span></div>
+    <div class="nav-contact">contact@global-trade.fr</div>
+  </div>
+</nav>
 
-  <section>
-    <h2>Ce qui est traité</h2>
-    <div class="manifest">
-      <div class="row">
-        <div class="code">01 — RECV</div>
-        <div class="desc"><strong>Réception des commandes</strong>Webhooks et synchronisations API depuis les plateformes de vente en direct, normalisés dans un format interne unique.</div>
+<section class="hero">
+  <div class="hero-eyebrow">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="6"/></svg>
+    Prestataire e-commerce &amp; logistique
+  </div>
+  <h1>Automatisation des flux <em>commande à livraison</em></h1>
+  <p>Synchronisation des stocks, dispatch multi-entrepôts, intégrations marketplace — nous connectons vos systèmes pour que les commandes s'exécutent sans intervention manuelle.</p>
+  <a href="mailto:contact@global-trade.fr" class="hero-cta">
+    Discuter d'un projet
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 7h10M8 3l4 4-4 4"/></svg>
+  </a>
+</section>
+
+<section class="services">
+  <div class="services-inner">
+    <div class="section-label">Services</div>
+    <h2>Ce que nous automatisons pour vous</h2>
+    <div class="services-grid">
+      <div class="service">
+        <div class="service-num">01</div>
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+        </div>
+        <h3>Gestion des commandes (OMS)</h3>
+        <p>Centralisation des commandes issues de vos canaux de vente (TikTok Shop, marketplaces, site propre) dans un système unique. Priorisation, routage, suivi en temps réel.</p>
       </div>
-      <div class="row">
-        <div class="code">02 — SYNC</div>
-        <div class="desc"><strong>Gestion des stocks</strong>Rapprochement produit/commande, mise à jour temps réel, alertes de rupture.</div>
+      <div class="service">
+        <div class="service-num">02</div>
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <h3>Synchronisation des stocks (WMS)</h3>
+        <p>Mise à jour automatique des niveaux de stock entre vos entrepôts, vos fournisseurs et vos canaux de vente. Alertes de réapprovisionnement, prévention des surventes.</p>
       </div>
-      <div class="row">
-        <div class="code">03 — SHIP</div>
-        <div class="desc"><strong>Préparation & expédition</strong>Files de traitement pour les opérateurs, impression des documents, mise à jour du statut vers la plateforme d'origine.</div>
+      <div class="service">
+        <div class="service-num">03</div>
+        <div class="service-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+        <h3>Dispatch &amp; expédition</h3>
+        <p>Sélection automatique du transporteur selon les critères (délai, coût, zone), génération des étiquettes, transmission aux entrepôts et notification des clients à chaque étape.</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section>
-    <h2>Outils</h2>
-    <div class="stack-list">
-      <span>Next.js</span>
-      <span>Supabase</span>
-      <span>n8n</span>
-      <span>Vercel</span>
-      <span>TikTok Shop API</span>
-      <span>Whatnot API</span>
+<section class="process">
+  <div class="process-inner">
+    <div class="section-label">Méthode</div>
+    <h2>De l'intégration au flux opérationnel</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Audit des flux existants</h4>
+          <p>Cartographie de vos systèmes actuels (ERP, marketplace, logistique), identification des points de friction et des tâches répétitives à automatiser.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>Conception de l'architecture</h4>
+          <p>Définition des flux de données, choix des connecteurs (API natives, webhooks, connecteurs custom) et mise en place de l'environnement de test.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Développement &amp; intégration</h4>
+          <p>Mise en place des automatisations sur stack n8n / Supabase / Vercel. Connexion aux APIs TikTok Shop, Packlink, Stripe et tout autre système métier requis.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Déploiement &amp; suivi</h4>
+          <p>Mise en production, formation à l'utilisation des dashboards, monitoring des flux et interventions correctives inclus dans la prestation.</p>
+        </div>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer>
-    Global Trade — SIREN 510 802 663 — 42 boulevard Pasteur, 95210 Saint-Gratien, France<br>
-    Contact via <a href="https://www.malt.fr/profile/watnapaquete" target="_blank">Malt</a>
-  </footer>
-</div>
+<section class="about">
+  <div class="about-inner">
+    <div>
+      <h2>Prestataire indépendant, spécialiste des flux e-commerce</h2>
+      <p>Global Trade est l'activité d'automatisation et d'intégration de Watna Kilowange Paquete Soares, entrepreneur individuel basé en Île-de-France. Nous intervenons auprès de marchands en croissance qui ont besoin de systèmes fiables pour absorber leur volume sans recruter.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat">
+        <div class="stat-num">2009</div>
+        <div class="stat-label">Entreprise active depuis</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">OMS · WMS</div>
+        <div class="stat-label">Spécialisation principale</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">IDF</div>
+        <div class="stat-label">Base — interventions France entière</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">Global<span>Trade</span></div>
+    <div class="footer-info">
+      Watna Kilowange Paquete Soares — Entrepreneur individuel<br>
+      SIREN 510 802 663 · RCS Pontoise · APE 47.82Z<br>
+      42 boulevard Pasteur, 95210 Saint-Gratien
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
