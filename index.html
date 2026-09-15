@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Trade — Automatisation e-commerce & gestion de commandes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --ink: #1B2430;
+    --parchment: #E9E2CE;
+    --parchment-light: #F2EEDF;
+    --stamp: #B23A2E;
+    --line: #C9BFA0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--parchment-light);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+  }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  header {
+    padding: 72px 0 56px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    color: var(--stamp);
+    margin-bottom: 40px;
+  }
+  .mark::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--stamp);
+    display: inline-block;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.12;
+    max-width: 14ch;
+    margin-bottom: 20px;
+  }
+
+  .lede {
+    font-size: 18px;
+    max-width: 46ch;
+    color: #3A4252;
+  }
+
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+
+  .manifest {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 88px 1fr;
+    gap: 20px;
+    align-items: baseline;
+  }
+
+  .row .code {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--stamp);
+    font-size: 15px;
+  }
+
+  .row .desc { font-size: 15.5px; }
+  .row .desc strong { display: block; font-weight: 600; margin-bottom: 2px; font-family: 'Inter', sans-serif; }
+
+  .stack-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .stack-list span {
+    font-size: 13.5px;
+    padding: 6px 12px;
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    background: var(--parchment);
+  }
+
+  footer {
+    padding: 48px 0 72px;
+    font-size: 14px;
+    color: #6B6252;
+  }
+
+  footer a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--line); }
+
+  @media (max-width: 560px) {
+    .row { grid-template-columns: 60px 1fr; }
+    header { padding: 48px 0 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <div class="mark">Global Trade — Entrepreneur individuel, France</div>
+    <h1>La logistique e-commerce qui ne dort jamais.</h1>
+    <p class="lede">Conception et développement de systèmes d'automatisation pour la synchronisation de commandes, la gestion de stock et le traitement multicanal — TikTok Shop, Whatnot et au-delà.</p>
+  </header>
+
+  <section>
+    <h2>Ce qui est traité</h2>
+    <div class="manifest">
+      <div class="row">
+        <div class="code">01 — RECV</div>
+        <div class="desc"><strong>Réception des commandes</strong>Webhooks et synchronisations API depuis les plateformes de vente en direct, normalisés dans un format interne unique.</div>
+      </div>
+      <div class="row">
+        <div class="code">02 — SYNC</div>
+        <div class="desc"><strong>Gestion des stocks</strong>Rapprochement produit/commande, mise à jour temps réel, alertes de rupture.</div>
+      </div>
+      <div class="row">
+        <div class="code">03 — SHIP</div>
+        <div class="desc"><strong>Préparation & expédition</strong>Files de traitement pour les opérateurs, impression des documents, mise à jour du statut vers la plateforme d'origine.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Outils</h2>
+    <div class="stack-list">
+      <span>Next.js</span>
+      <span>Supabase</span>
+      <span>n8n</span>
+      <span>Vercel</span>
+      <span>TikTok Shop API</span>
+      <span>Whatnot API</span>
+    </div>
+  </section>
+
+  <footer>
+    Global Trade — SIREN 510 802 663 — 42 boulevard Pasteur, 95210 Saint-Gratien, France<br>
+    Contact via <a href="https://www.malt.fr/profile/watnapaquete" target="_blank">Malt</a>
+  </footer>
+</div>
+
+</body>
+</html>
