@@ -83,6 +83,20 @@ footer{padding:40px 5%;border-top:1px solid var(--border)}
   .footer-info{text-align:center}
   .step{grid-template-columns:36px 1fr}
 }
+/* PRIVACY */
+.privacy{padding:90px 5%;background:var(--white);border-top:1px solid var(--border)}
+.privacy-inner{max-width:1100px;margin:0 auto}
+.privacy-inner h2{font-size:clamp(24px,3vw,34px);font-weight:700;letter-spacing:-0.8px;margin-bottom:8px;line-height:1.2}
+.privacy-update{font-size:12px;color:var(--grey);margin-bottom:40px}
+.privacy-blocks{display:flex;flex-direction:column;gap:0}
+.privacy-block{display:grid;grid-template-columns:48px 1fr;gap:16px;padding:22px 0;border-top:1px solid var(--border)}
+.privacy-block:last-child{border-bottom:1px solid var(--border)}
+.pb-num{font-size:12px;font-weight:700;color:var(--blue);padding-top:3px}
+.privacy-block h4{font-size:14px;font-weight:600;margin-bottom:6px}
+.privacy-block p{font-size:13px;color:var(--grey);line-height:1.7}
+.privacy-block a{color:var(--blue);text-decoration:none}
+.privacy-block a:hover{text-decoration:underline}
+
 /* CONTACT */
 .contact{padding:90px 5%;background:var(--bg-alt)}
 .contact-inner{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:start}
@@ -218,6 +232,25 @@ footer{padding:40px 5%;border-top:1px solid var(--border)}
         <div class="stat-num">IDF</div>
         <div class="stat-label">Base — interventions France entière</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- POLITIQUE DE CONFIDENTIALITE -->
+<section class="privacy" id="politique-confidentialite">
+  <div class="privacy-inner">
+    <div class="section-label">Confidentialité</div>
+    <h2>Politique de confidentialité</h2>
+    <p class="privacy-update">Dernière mise à jour : 21 septembre 2026 — applicable au traitement des données réalisé via l'intégration TikTok Shop de Global Trade</p>
+    <div class="privacy-blocks">
+      <div class="privacy-block"><span class="pb-num">1</span><div><h4>Qui traite vos données</h4><p>Le responsable du traitement est Global Trade, entreprise individuelle de Watna Kilowange Paquete Soares (SIREN 510 802 663, RCS Pontoise, APE 47.82Z), 42 boulevard Pasteur, 95210 Saint-Gratien, France.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">2</span><div><h4>Données collectées</h4><p>Dans le cadre du traitement des commandes passées via TikTok Shop, nous traitons : l'identifiant et le statut de votre commande, votre nom et votre adresse de livraison, votre numéro de téléphone lorsqu'il est nécessaire à la livraison, et les informations d'expédition (transporteur, numéro de suivi). Aucune donnée de paiement n'est collectée ni conservée par nos soins ; les transactions restent entièrement gérées par TikTok Shop.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">3</span><div><h4>Pourquoi nous les traitons</h4><p>Ces données sont utilisées exclusivement pour préparer, expédier et suivre votre commande, dans le cadre de l'exécution du contrat de vente conclu via TikTok Shop.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">4</span><div><h4>Avec qui elles sont partagées</h4><p>Supabase (hébergement base de données, UE, chiffrement au repos et en transit), Vercel (hébergement de l'application), et le transporteur en charge de la livraison pour les seules informations nécessaires. Aucune donnée n'est transférée hors de l'Union européenne.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">5</span><div><h4>Durée de conservation</h4><p>Conservées le temps nécessaire au traitement de la commande, puis supprimées ou anonymisées sous 30 jours, hors obligations comptables légales. En cas de fin de la coopération avec TikTok Shop, l'ensemble des données obtenues via son API est supprimé sous 30 jours.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">6</span><div><h4>Vos droits</h4><p>Droit d'accès, de rectification, de suppression, d'opposition et de portabilité (RGPD), traité sous 30 jours maximum. Réclamation possible auprès de la CNIL (<a href="https://www.cnil.fr" target="_blank">cnil.fr</a>).</p></div></div>
+      <div class="privacy-block"><span class="pb-num">7</span><div><h4>Sécurité</h4><p>Chiffrement au repos (AES-256) et en transit (TLS), accès restreint selon le principe du moindre privilège. Notification sous 72 heures en cas de violation de données vous concernant.</p></div></div>
+      <div class="privacy-block"><span class="pb-num">8</span><div><h4>Contact</h4><p>Global Trade — Watna Kilowange Paquete Soares — SIREN 510 802 663<br>E-mail : <a href="mailto:contact@wtng.online">contact@wtng.online</a></p></div></div>
     </div>
   </div>
 </section>
