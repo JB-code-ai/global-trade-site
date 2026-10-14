@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Content Manager — Prototype Démo</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0F1117;
+  --surface:#1A1D27;
+  --surface2:#222637;
+  --surface3:#2A2F45;
+  --border:#2E3347;
+  --blue:#4F8EF7;
+  --blue-dim:#1E3A6E;
+  --green:#22C55E;
+  --green-dim:#14532D;
+  --yellow:#F59E0B;
+  --red:#EF4444;
+  --text:#F1F5F9;
+  --text2:#94A3B8;
+  --text3:#64748B;
+  --demo:#7C3AED;
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh;display:flex;flex-direction:column}
+
+/* DEMO BANNER */
+.demo-banner{background:var(--demo);color:#fff;text-align:center;padding:8px 16px;font-size:12px;font-weight:600;letter-spacing:0.5px;position:sticky;top:0;z-index:200}
+.demo-banner span{opacity:0.8;font-weight:400}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:33px;z-index:100}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:28px;height:28px;background:var(--blue);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.brand-name{font-weight:700;font-size:15px}
+.brand-name span{color:var(--blue)}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.account-pill{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px 5px 6px;cursor:pointer;transition:background 0.15s}
+.account-pill:hover{background:var(--surface3)}
+.avatar{width:24px;height:24px;background:linear-gradient(135deg,#4F8EF7,#7C3AED);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.account-name{font-size:13px;font-weight:500}
+.connected-dot{width:7px;height:7px;background:var(--green);border-radius:50%}
+.notif-btn{width:32px;height:32px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative}
+.notif-badge{position:absolute;top:4px;right:4px;width:8px;height:8px;background:var(--blue);border-radius:50%;border:1.5px solid var(--surface)}
+
+/* LAYOUT */
+.app-body{display:flex;flex:1}
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);padding:16px 12px;display:flex;flex-direction:column;gap:4px;min-height:calc(100vh - 33px - 56px)}
+.nav-section-label{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1px;text-transform:uppercase;padding:8px 8px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;color:var(--text2);transition:all 0.15s;font-size:13px;font-weight:500}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--blue-dim);color:var(--blue)}
+.nav-item svg{flex-shrink:0;opacity:0.7}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--blue);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px}
+.main{flex:1;padding:28px 32px;overflow-y:auto}
+
+/* PAGE HEADER */
+.page-header{margin-bottom:28px}
+.page-title{font-size:22px;font-weight:700;letter-spacing:-0.4px;margin-bottom:4px}
+.page-sub{font-size:13px;color:var(--text2)}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px}
+.stat-label{font-size:12px;color:var(--text3);font-weight:500;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.stat-value{font-size:26px;font-weight:700;letter-spacing:-0.8px;margin-bottom:4px}
+.stat-change{font-size:12px;color:var(--green);font-weight:500}
+.stat-change.down{color:var(--red)}
+
+/* SECTIONS */
+.section{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:20px}
+.section-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.section-title{font-size:14px;font-weight:600}
+.section-action{font-size:12px;color:var(--blue);cursor:pointer;font-weight:500}
+
+/* TABLE */
+.table{width:100%;border-collapse:collapse}
+.table th{text-align:left;padding:10px 20px;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+.table td{padding:12px 20px;border-bottom:1px solid var(--border);font-size:13px;vertical-align:middle}
+.table tr:last-child td{border-bottom:none}
+.table tr:hover td{background:var(--surface2)}
+.video-thumb{width:48px;height:32px;background:var(--surface3);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.video-cell{display:flex;align-items:center;gap:12px}
+.video-title{font-weight:500}
+.video-meta{font-size:11px;color:var(--text3);margin-top:1px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:600}
+.badge.published{background:var(--green-dim);color:var(--green)}
+.badge.scheduled{background:var(--blue-dim);color:var(--blue)}
+.badge.draft{background:var(--surface3);color:var(--text3)}
+.badge.processing{background:#3B1C1C;color:var(--yellow)}
+
+/* SCHEDULE GRID */
+.schedule-grid{padding:20px;display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.day-col{display:flex;flex-direction:column;gap:6px}
+.day-label{font-size:11px;font-weight:600;color:var(--text3);text-align:center;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.day-label.today{color:var(--blue)}
+.slot{background:var(--surface2);border-radius:6px;padding:8px;font-size:11px;cursor:pointer;transition:background 0.15s;border:1px solid var(--border)}
+.slot:hover{background:var(--surface3)}
+.slot.filled{background:var(--blue-dim);border-color:var(--blue)}
+.slot.filled .slot-time{color:var(--blue);font-weight:600}
+.slot-time{color:var(--text3);margin-bottom:2px}
+.slot-title{color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot-empty{color:var(--text3);text-align:center;padding:6px 0}
+
+/* ANALYTICS */
+.analytics-row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.chart-area{padding:20px}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;margin-bottom:8px}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1}
+.bar{background:var(--blue);border-radius:4px 4px 0 0;width:100%;transition:height 0.3s;min-height:4px}
+.bar-label{font-size:10px;color:var(--text3)}
+.chart-legend{display:flex;gap:16px;margin-top:8px}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2)}
+.legend-dot{width:8px;height:8px;border-radius:50%}
+.top-videos{padding:20px}
+.top-video-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--border)}
+.top-video-item:last-child{border-bottom:none}
+.rank{font-size:18px;font-weight:700;color:var(--text3);width:24px;text-align:center}
+.top-video-info{flex:1}
+.top-video-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.top-video-views{font-size:12px;color:var(--text3)}
+.top-video-bar{height:4px;background:var(--surface3);border-radius:2px;margin-top:4px}
+.top-video-fill{height:100%;background:var(--blue);border-radius:2px}
+
+/* AUTH SCREEN */
+.auth-screen{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:400px;text-align:center;padding:40px}
+.auth-icon{width:64px;height:64px;background:var(--blue-dim);border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.auth-title{font-size:20px;font-weight:700;margin-bottom:8px}
+.auth-sub{font-size:14px;color:var(--text2);margin-bottom:32px;max-width:400px}
+.auth-btn{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:12px 28px;font-family:'Inter';font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;margin:0 auto;transition:opacity 0.15s}
+.auth-btn:hover{opacity:0.9}
+.auth-note{margin-top:16px;font-size:11px;color:var(--text3)}
+
+/* OAUTH MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:420px;padding:32px;position:relative}
+.modal-badge{display:inline-block;background:var(--demo);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;letter-spacing:0.5px;margin-bottom:16px}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.modal p{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6}
+.modal-perms{background:var(--surface2);border-radius:8px;padding:16px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px}
+.perm-item{display:flex;align-items:center;gap:10px;font-size:13px}
+.perm-icon{color:var(--green)}
+.modal-actions{display:flex;gap:10px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-family:'Inter';font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.modal-btn.primary{background:var(--blue);color:#fff}
+.modal-btn.primary:hover{opacity:0.9}
+.modal-btn.secondary{background:var(--surface3);color:var(--text2)}
+.modal-btn.secondary:hover{background:var(--border)}
+.modal-note{font-size:11px;color:var(--text3);text-align:center;margin-top:12px}
+
+/* UPLOAD AREA */
+.upload-area{border:2px dashed var(--border);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all 0.15s;margin:20px}
+.upload-area:hover{border-color:var(--blue);background:var(--blue-dim)}
+.upload-icon{color:var(--text3);margin-bottom:12px}
+.upload-title{font-size:15px;font-weight:600;margin-bottom:6px}
+.upload-sub{font-size:13px;color:var(--text2)}
+
+/* BTN */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:7px;font-family:'Inter';font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all 0.15s}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{opacity:0.9}
+.btn-ghost{background:transparent;color:var(--text2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface2);color:var(--text)}
+
+/* TABS */
+.tabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:24px;width:fit-content}
+.tab{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text2);transition:all 0.15s}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:48px 20px;color:var(--text3)}
+.empty svg{margin-bottom:12px;opacity:0.4}
+.empty p{font-size:13px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:13px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:999;opacity:0;transform:translateY(8px);transition:all 0.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0}
+
+/* PROGRESS */
+.progress-bar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;background:var(--blue);border-radius:2px;transition:width 0.3s}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .stat-row{grid-template-columns:repeat(2,1fr)}
+  .analytics-row{grid-template-columns:1fr}
+  .main{padding:16px}
+  .schedule-grid{grid-template-columns:repeat(4,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  🎬 PROTOTYPE DE DÉMONSTRATION — Données fictives à des fins d'illustration <span>— Aucune API réelle connectée — Aucun token ou identifiant réel utilisé</span>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+    </div>
+    <div class="brand-name">Global <span>Content</span> Manager</div>
+  </div>
+  <div class="topbar-right">
+    <div class="notif-btn" onclick="showToast('3 publications programmées pour demain')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+      <div class="notif-badge"></div>
+    </div>
+    <div class="account-pill" onclick="showToast('Compte Studio Lumière connecté')">
+      <div class="avatar">SL</div>
+      <div class="account-name">Studio Lumière</div>
+      <div class="connected-dot"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="nav-section-label">Navigation</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('videos',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      Vidéothèque
+      <span class="nav-badge">12</span>
+    </div>
+    <div class="nav-item" onclick="showPage('schedule',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Planification
+    </div>
+    <div class="nav-item" onclick="showPage('analytics',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Statistiques
+    </div>
+    <div class="nav-section-label" style="margin-top:8px">Compte</div>
+    <div class="nav-item" onclick="showPage('connect',this)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Connexion compte
+    </div>
+    <div class="nav-item" onclick="showToast('Paramètres — fonctionnalité démo')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      Paramètres
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Semaine du 7 au 13 octobre 2026 — Compte : Studio Lumière</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            Vues totales
+          </div>
+          <div class="stat-value">284 K</div>
+          <div class="stat-change">↑ +18% vs semaine préc.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            Interactions
+          </div>
+          <div class="stat-value">12 400</div>
+          <div class="stat-change">↑ +22% vs semaine préc.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+            Publications
+          </div>
+          <div class="stat-value">7</div>
+          <div class="stat-change">↑ +2 vs semaine préc.</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            Nouveaux abonnés
+          </div>
+          <div class="stat-value">+1 240</div>
+          <div class="stat-change">↑ +34% vs semaine préc.</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Publications récentes</div>
+          <div class="section-action" onclick="showPage('videos',document.querySelector('[onclick*=videos]'))">Voir toutes →</div>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Vidéo</th>
+              <th>Statut</th>
+              <th>Vues</th>
+              <th>Interactions</th>
+              <th>Publié le</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Routine matinale — productivité</div><div class="video-meta">Durée : 0:58 · Qualité HD</div></div></div></td>
+              <td><span class="badge published">● Publié</span></td>
+              <td>48 200</td>
+              <td>2 140</td>
+              <td>13 oct. 2026</td>
+            </tr>
+            <tr>
+              <td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Conseils déco automne 2026</div><div class="video-meta">Durée : 1:12 · Qualité HD</div></div></div></td>
+              <td><span class="badge published">● Publié</span></td>
+              <td>72 800</td>
+              <td>3 900</td>
+              <td>11 oct. 2026</td>
+            </tr>
+            <tr>
+              <td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Recette rapide — 10 minutes</div><div class="video-meta">Durée : 0:45 · Qualité HD</div></div></div></td>
+              <td><span class="badge scheduled">● Programmé</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>15 oct. 09h00</td>
+            </tr>
+            <tr>
+              <td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Haul mode — tendances oct.</div><div class="video-meta">Durée : 2:03 · Qualité HD</div></div></div></td>
+              <td><span class="badge draft">● Brouillon</span></td>
+              <td>—</td>
+              <td>—</td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Prochaines publications programmées</div>
+          <div class="section-action" onclick="showPage('schedule',document.querySelector('[onclick*=schedule]'))">Voir planning →</div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Vidéo</th><th>Date & heure</th><th>Statut</th></tr></thead>
+          <tbody>
+            <tr><td>Recette rapide — 10 minutes</td><td>15 oct. 2026 · 09:00</td><td><span class="badge scheduled">● Programmé</span></td></tr>
+            <tr><td>Tutoriel maison zéro déchet</td><td>16 oct. 2026 · 18:30</td><td><span class="badge scheduled">● Programmé</span></td></tr>
+            <tr><td>Q&A abonnés — octobre</td><td>17 oct. 2026 · 20:00</td><td><span class="badge scheduled">● Programmé</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div id="page-videos" style="display:none">
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="page-title">Vidéothèque</div>
+          <div class="page-sub">12 vidéos — 3 programmées · 7 publiées · 2 brouillons</div>
+        </div>
+        <button class="btn btn-primary" onclick="document.getElementById('upload-modal').classList.add('open')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Importer une vidéo
+        </button>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="filterVideos('all',this)">Toutes (12)</div>
+        <div class="tab" onclick="filterVideos('published',this)">Publiées (7)</div>
+        <div class="tab" onclick="filterVideos('scheduled',this)">Programmées (3)</div>
+        <div class="tab" onclick="filterVideos('draft',this)">Brouillons (2)</div>
+      </div>
+      <div class="section">
+        <table class="table" id="videos-table">
+          <thead>
+            <tr>
+              <th>Vidéo</th>
+              <th>Statut</th>
+              <th>Vues</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="videos-body">
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Routine matinale — productivité</div><div class="video-meta">0:58 · HD · 2,4 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>48 200</td><td>13 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Conseils déco automne 2026</div><div class="video-meta">1:12 · HD · 3,1 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>72 800</td><td>11 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Test produit beauté naturelle</div><div class="video-meta">0:52 · HD · 2,0 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>31 500</td><td>9 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Vlog weekend Bretagne</div><div class="video-meta">2:34 · HD · 7,8 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>94 100</td><td>6 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Top 5 applis créateurs 2026</div><div class="video-meta">1:05 · HD · 2,8 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>22 400</td><td>3 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Ma journée type de créateur</div><div class="video-meta">1:48 · HD · 5,2 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>18 900</td><td>1 oct. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="published"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Réponses à vos questions</div><div class="video-meta">0:39 · HD · 1,6 MB</div></div></div></td><td><span class="badge published">● Publié</span></td><td>15 300</td><td>28 sept. 2026</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Statistiques détaillées — démo')">Stats</button></td></tr>
+            <tr data-status="scheduled"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Recette rapide — 10 minutes</div><div class="video-meta">0:45 · HD · 1,9 MB</div></div></div></td><td><span class="badge scheduled">● Programmé</span></td><td>—</td><td>15 oct. · 09:00</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Modification de la programmation — démo')">Modifier</button></td></tr>
+            <tr data-status="scheduled"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Tutoriel maison zéro déchet</div><div class="video-meta">1:20 · HD · 4,1 MB</div></div></div></td><td><span class="badge scheduled">● Programmé</span></td><td>—</td><td>16 oct. · 18:30</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Modification de la programmation — démo')">Modifier</button></td></tr>
+            <tr data-status="scheduled"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Q&A abonnés — octobre</div><div class="video-meta">2:10 · HD · 6,0 MB</div></div></div></td><td><span class="badge scheduled">● Programmé</span></td><td>—</td><td>17 oct. · 20:00</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Modification de la programmation — démo')">Modifier</button></td></tr>
+            <tr data-status="draft"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Haul mode — tendances oct.</div><div class="video-meta">2:03 · HD · 5,5 MB</div></div></div></td><td><span class="badge draft">● Brouillon</span></td><td>—</td><td>Non planifié</td><td><button class="btn btn-primary" style="padding:4px 10px;font-size:12px" onclick="showToast('Planification enregistrée ✓')">Planifier</button></td></tr>
+            <tr data-status="draft"><td><div class="video-cell"><div class="video-thumb"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></div><div><div class="video-title">Mini-vlog marché local</div><div class="video-meta">1:15 · En traitement…</div><div class="progress-bar" style="width:140px"><div class="progress-fill" style="width:65%"></div></div></div></div></td><td><span class="badge processing">● Traitement</span></td><td>—</td><td>—</td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px;opacity:0.5" disabled>Attente</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SCHEDULE -->
+    <div id="page-schedule" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Planification</div>
+        <div class="page-sub">Octobre 2026 — Publications programmées et créneaux disponibles</div>
+      </div>
+      <div class="section">
+        <div class="section-head">
+          <div class="section-title">Semaine du 13 au 19 octobre 2026</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost" onclick="showToast('Navigation semaine précédente — démo')">← Préc.</button>
+            <button class="btn btn-ghost" onclick="showToast('Navigation semaine suivante — démo')">Suiv. →</button>
+          </div>
+        </div>
+        <div class="schedule-grid">
+          <div class="day-col">
+            <div class="day-label">Lun 13</div>
+            <div class="slot filled"><div class="slot-time">09:00</div><div class="slot-title">Routine matinale</div></div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Mar 14 <span style="color:var(--blue);font-size:9px">AUJ.</span></div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+            <div class="slot filled"><div class="slot-time">18:00</div><div class="slot-title">Conseils déco</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Mer 15</div>
+            <div class="slot filled"><div class="slot-time">09:00</div><div class="slot-title">Recette rapide</div></div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Jeu 16</div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+            <div class="slot filled"><div class="slot-time">18:30</div><div class="slot-title">Zéro déchet</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Ven 17</div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+            <div class="slot filled"><div class="slot-time">20:00</div><div class="slot-title">Q&A abonnés</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Sam 18</div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+          </div>
+          <div class="day-col">
+            <div class="day-label">Dim 19</div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+            <div class="slot"><div class="slot-empty">+ Ajouter</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:20px">
+        <div class="section-head">
+          <div class="section-title">Publications confirmées</div>
+        </div>
+        <table class="table">
+          <thead><tr><th>Vidéo</th><th>Date & heure</th><th>Statut</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Recette rapide — 10 minutes</td><td>15 oct. 2026 · 09:00</td><td><span class="badge scheduled">● Programmé</span></td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Publication annulée — démo')">Annuler</button></td></tr>
+            <tr><td>Tutoriel maison zéro déchet</td><td>16 oct. 2026 · 18:30</td><td><span class="badge scheduled">● Programmé</span></td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Publication annulée — démo')">Annuler</button></td></tr>
+            <tr><td>Q&A abonnés — octobre</td><td>17 oct. 2026 · 20:00</td><td><span class="badge scheduled">● Programmé</span></td><td><button class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="showToast('Publication annulée — démo')">Annuler</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ANALYTICS -->
+    <div id="page-analytics" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Statistiques</div>
+        <div class="page-sub">Performances des 30 derniers jours — Compte : Studio Lumière · 124 K abonnés</div>
+      </div>
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-label">Vues totales (30j)</div>
+          <div class="stat-value">1,1 M</div>
+          <div class="stat-change">↑ +24%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Taux d'engagement</div>
+          <div class="stat-value">4,3 %</div>
+          <div class="stat-change">↑ +0,8 pts</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Partages</div>
+          <div class="stat-value">8 920</div>
+          <div class="stat-change">↑ +15%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Taux de complétion</div>
+          <div class="stat-value">68 %</div>
+          <div class="stat-change down">↓ -2 pts</div>
+        </div>
+      </div>
+      <div class="analytics-row">
+        <div class="section">
+          <div class="section-head"><div class="section-title">Vues par jour (oct. 2026)</div></div>
+          <div class="chart-area">
+            <div class="chart-bars">
+              <div class="bar-wrap"><div class="bar" style="height:40%"></div><div class="bar-label">1</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:55%"></div><div class="bar-label">2</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:45%"></div><div class="bar-label">3</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:70%"></div><div class="bar-label">4</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:60%"></div><div class="bar-label">5</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:90%;background:var(--green)"></div><div class="bar-label">6</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:75%"></div><div class="bar-label">7</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:50%"></div><div class="bar-label">8</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:65%"></div><div class="bar-label">9</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:80%"></div><div class="bar-label">10</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:72%"></div><div class="bar-label">11</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:68%"></div><div class="bar-label">12</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:100%;background:var(--blue)"></div><div class="bar-label">13</div></div>
+              <div class="bar-wrap"><div class="bar" style="height:20%;opacity:0.4"></div><div class="bar-label">14</div></div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Vues</div>
+              <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Pic journalier</div>
+            </div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-head"><div class="section-title">Top vidéos</div></div>
+          <div class="top-videos">
+            <div class="top-video-item">
+              <div class="rank">1</div>
+              <div class="top-video-info">
+                <div class="top-video-title">Vlog weekend Bretagne</div>
+                <div class="top-video-views">94 100 vues</div>
+                <div class="top-video-bar"><div class="top-video-fill" style="width:100%"></div></div>
+              </div>
+            </div>
+            <div class="top-video-item">
+              <div class="rank">2</div>
+              <div class="top-video-info">
+                <div class="top-video-title">Conseils déco automne 2026</div>
+                <div class="top-video-views">72 800 vues</div>
+                <div class="top-video-bar"><div class="top-video-fill" style="width:77%"></div></div>
+              </div>
+            </div>
+            <div class="top-video-item">
+              <div class="rank">3</div>
+              <div class="top-video-info">
+                <div class="top-video-title">Routine matinale — productivité</div>
+                <div class="top-video-views">48 200 vues</div>
+                <div class="top-video-bar"><div class="top-video-fill" style="width:51%"></div></div>
+              </div>
+            </div>
+            <div class="top-video-item">
+              <div class="rank">4</div>
+              <div class="top-video-info">
+                <div class="top-video-title">Test produit beauté naturelle</div>
+                <div class="top-video-views">31 500 vues</div>
+                <div class="top-video-bar"><div class="top-video-fill" style="width:33%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONNECT -->
+    <div id="page-connect" style="display:none">
+      <div class="page-header">
+        <div class="page-title">Connexion compte créateur</div>
+        <div class="page-sub">Autorisez Global Content Manager à gérer vos contenus via OAuth 2.0</div>
+      </div>
+      <div class="section">
+        <div class="section-head"><div class="section-title">Compte connecté</div></div>
+        <div style="padding:24px;display:flex;align-items:center;gap:20px">
+          <div class="avatar" style="width:48px;height:48px;font-size:18px">SL</div>
+          <div>
+            <div style="font-size:16px;font-weight:700">Studio Lumière</div>
+            <div style="font-size:13px;color:var(--text2);margin-top:2px">@studiolumiere_fictif · 124 000 abonnés</div>
+            <div style="margin-top:8px;display:flex;gap:8px">
+              <span class="badge published">● Connecté</span>
+              <span style="font-size:11px;color:var(--text3);margin-top:2px">Autorisé le 8 oct. 2026</span>
+            </div>
+          </div>
+          <div style="margin-left:auto">
+            <button class="btn btn-ghost" onclick="showToast('Révocation de l\'accès — démo')">Révoquer l'accès</button>
+          </div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:20px">
+        <div class="section-head"><div class="section-title">Permissions accordées</div></div>
+        <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div style="font-size:13px;font-weight:600">user.info.basic</div><div style="font-size:12px;color:var(--text3)">Lecture des informations de profil de base</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div style="font-size:13px;font-weight:600">video.list</div><div style="font-size:12px;color:var(--text3)">Consultation de la liste des vidéos du compte</div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:14px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+            <div><div style="font-size:13px;font-weight:600">video.upload</div><div style="font-size:12px;color:var(--text3)">Publication et programmation de vidéos</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="section" style="margin-top:20px">
+        <div class="section-head"><div class="section-title">Ajouter un compte</div></div>
+        <div class="auth-screen" style="display:flex">
+          <div class="auth-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4F8EF7" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="auth-title">Connecter un nouveau compte créateur</div>
+          <div class="auth-sub">Autorisez Global Content Manager à accéder à vos contenus via le protocole OAuth 2.0. Vos identifiants ne sont jamais stockés.</div>
+          <button class="auth-btn" onclick="document.getElementById('oauth-modal').classList.add('open')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Autoriser via OAuth 2.0
+          </button>
+          <div class="auth-note">Vous serez redirigé vers la plateforme pour confirmer les permissions</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- OAUTH MODAL -->
+<div class="modal-overlay" id="oauth-modal">
+  <div class="modal">
+    <div class="modal-badge">PROTOTYPE DÉMO</div>
+    <h3>Autorisation OAuth 2.0</h3>
+    <p>Global Content Manager demande l'accès aux permissions suivantes pour votre compte créateur. Aucune donnée réelle n'est utilisée dans ce prototype.</p>
+    <div class="modal-perms">
+      <div class="perm-item">
+        <svg class="perm-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Lire les informations de profil (user.info.basic)
+      </div>
+      <div class="perm-item">
+        <svg class="perm-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Consulter la liste de vos vidéos (video.list)
+      </div>
+      <div class="perm-item">
+        <svg class="perm-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Publier des vidéos en votre nom (video.upload)
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="document.getElementById('oauth-modal').classList.remove('open')">Annuler</button>
+      <button class="modal-btn primary" onclick="oauthSuccess()">Autoriser l'accès</button>
+    </div>
+    <div class="modal-note">⚠️ Simulation — aucun token réel n'est généré ni stocké</div>
+  </div>
+</div>
+
+<!-- UPLOAD MODAL -->
+<div class="modal-overlay" id="upload-modal">
+  <div class="modal">
+    <div class="modal-badge">PROTOTYPE DÉMO</div>
+    <h3>Importer une vidéo</h3>
+    <p>Sélectionnez une vidéo à importer dans la vidéothèque pour planification et publication.</p>
+    <div class="upload-area" onclick="uploadDemo()">
+      <svg class="upload-icon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div class="upload-title">Glissez une vidéo ici</div>
+      <div class="upload-sub">ou cliquez pour sélectionner — MP4, MOV · Max 500 MB</div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn secondary" onclick="document.getElementById('upload-modal').classList.remove('open')">Annuler</button>
+    </div>
+    <div class="modal-note">⚠️ Simulation — aucun fichier n'est réellement traité</div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+function showPage(id, el) {
+  document.querySelectorAll('[id^="page-"]').forEach(p => p.style.display = 'none');
+  document.getElementById('page-' + id).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function filterVideos(status, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const rows = document.querySelectorAll('#videos-body tr');
+  rows.forEach(r => {
+    if (status === 'all' || r.dataset.status === status) {
+      r.style.display = '';
+    } else {
+      r.style.display = 'none';
+    }
+  });
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function oauthSuccess() {
+  document.getElementById('oauth-modal').classList.remove('open');
+  showToast('✓ Compte connecté avec succès — données fictives chargées');
+}
+
+function uploadDemo() {
+  document.getElementById('upload-modal').classList.remove('open');
+  showToast('✓ Vidéo importée — traitement en cours (simulation)');
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
