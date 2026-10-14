@@ -187,11 +187,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 
 @media(max-width:768px){
   .sidebar{display:none}
+  .main{padding:16px 16px 86px}
+  .mobile-nav{display:grid}
   .stat-row{grid-template-columns:repeat(2,1fr)}
   .analytics-row{grid-template-columns:1fr}
-  .main{padding:16px}
   .schedule-grid{grid-template-columns:repeat(4,1fr)}
+  .section{overflow-x:auto}
 }
+.mobile-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:450;
+  grid-template-columns:repeat(5,1fr);gap:2px;padding:8px 6px calc(8px + env(safe-area-inset-bottom));
+  background:rgba(16,20,34,.98);border-top:1px solid var(--border);box-shadow:0 -8px 24px #0007}
+.mobile-nav-item{min-height:48px;border:0;border-radius:8px;background:transparent;color:var(--text2);
+  font:600 10px/1.2 Inter,Arial,sans-serif;padding:6px 2px;cursor:pointer}
+.mobile-nav-item:focus,.mobile-nav-item:hover{background:var(--surface3);color:var(--text)}
 </style>
 </head>
 <body>
@@ -200,6 +208,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 <div class="demo-banner">
   🎬 PROTOTYPE DE DÉMONSTRATION — Données fictives à des fins d'illustration <span>— Aucune API réelle connectée — Aucun token ou identifiant réel utilisé</span>
 </div>
+
+<!-- MOBILE NAVIGATION — keeps all demo screens reachable during phone recording -->
+<nav class="mobile-nav" aria-label="Navigation mobile">
+  <button class="mobile-nav-item" onclick="showPage('dashboard',this)">Accueil</button>
+  <button class="mobile-nav-item" onclick="showPage('videos',this)">Vidéos</button>
+  <button class="mobile-nav-item" onclick="showPage('schedule',this)">Planning</button>
+  <button class="mobile-nav-item" onclick="showPage('analytics',this)">Stats</button>
+  <button class="mobile-nav-item" onclick="showPage('connect',this)">OAuth</button>
+</nav>
 
 <!-- TOPBAR -->
 <div class="topbar">
@@ -731,5 +748,6 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
   });
 });
 </script>
+<script src="global-content-autodemo.js"></script>
 </body>
 </html>
