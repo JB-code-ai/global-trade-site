@@ -160,7 +160,7 @@ textarea{min-height:96px;resize:vertical}
         <input id="u-prod" type="text" maxlength="120" placeholder="Ex. Caramel Crush 50 ml">
         <label class="chk"><input id="u-ai" type="checkbox" checked><span>Contenu généré par IA<small>Obligatoire à déclarer si la vidéo contient des images ou personnes réalistes créées par IA.</small></span></label>
         <label class="chk"><input id="u-brand" type="checkbox" checked><span>Promotion de ma marque<small>À cocher quand la vidéo fait la promotion de tes propres produits.</small></span></label>
-        <label class="chk"><input id="u-real" type="checkbox"><span>Plans réels du produit<small>Vidéo filmée avec le vrai produit, du mouvement, des mains ou une personne. Seules ces vidéos peuvent recevoir un lien produit TikTok Shop.</small></span></label>
+        <label class="chk"><input id="u-real" type="checkbox"><span>Vidéo en mouvement (aucun plan fixe)<small>Vrais mouvements tout du long (filmée ou IA animée), produit fidèle au vrai. À NE PAS cocher pour des images fixes avec zoom, un diaporama ou du texte animé : ces vidéos ne doivent jamais recevoir de lien produit TikTok Shop (sanction de −4 points).</small></span></label>
         <button class="btn" type="submit" id="u-btn">Envoyer la vidéo</button>
         <div class="prog hidden" id="u-prog"><i></i></div>
         <div id="u-msg"></div>
@@ -179,15 +179,17 @@ textarea{min-height:96px;resize:vertical}
         <label for="p-acc">Compte TikTok</label><select id="p-acc" required></select>
         <div class="row">
           <div><label for="p-date">Date et heure (heure de Paris)</label><input id="p-date" type="datetime-local" required></div>
-          <div><label>Mode (automatique selon le compte)</label>
+          <div><label>Mode (automatique : vidéo + compte)</label>
             <div class="seg"><label style="cursor:default"><span id="p-modelabel" style="color:var(--text)">—</span></label></div></div>
         </div>
         <div id="p-modehelp" class="note"></div>
+        <label class="chk hidden" id="p-forcewrap"><input id="p-force" type="checkbox"><span>Forcer en brouillon<small>Exceptionnel : pour retoucher dans l'app avant publication. Sur une vidéo statique, n'ajoute jamais de lien produit.</small></span></label>
+        <div id="p-cta" class="note"></div>
         <label for="p-cap">Description</label>
         <textarea id="p-cap" maxlength="2200" placeholder="Ex. Caramel Crush ✨ Disponible dans l'onglet Boutique de notre profil #parfum #collectionetoilee"></textarea>
         <div class="counter"><span id="p-count">0</span> / 2200</div>
         <div id="p-warn"></div>
-        <div class="row" style="margin-top:8px"><button class="btn" type="submit">Programmer</button><button class="btn ghost" type="button" id="p-now">Publier dès que possible</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn" type="submit" id="p-submit">Programmer</button><button class="btn ghost" type="button" id="p-now">Publier dès que possible</button></div>
         <div id="p-msg"></div>
       </form>
     </div>
@@ -199,7 +201,7 @@ textarea{min-height:96px;resize:vertical}
     <h1>Comptes TikTok</h1>
     <div class="card">
       <div class="note">Pour connecter un compte, connecte-toi d'abord à <b>ce compte</b> sur TikTok (app ou tiktok.com), puis clique sur le bouton ci-dessous et accepte l'autorisation. Un nouveau compte arrive comme <b>affilié sans lien en bio</b> (brouillon) : règle-le ensuite ci-dessous.</div>
-      <div class="note"><b>Règles de publication :</b> Collection Étoilée et ses comptes liés (5 max) → brouillon · Affilié avec lien en bio vers le site → publication directe · Affilié sans lien en bio → brouillon (il ajoute le lien produit de ta boutique).</div>
+      <div class="note"><b>Règles de publication</b> (vidéo + compte) :<br>• Vidéo <b>statique</b> → publication directe sans lien produit, sauf affilié sans lien en bio → <b>bloqué</b>.<br>• Vidéo <b>en mouvement</b> → Collection Étoilée et comptes liés (5 max) : brouillon (lien produit possible) · affilié avec lien en bio : direct · affilié sans lien en bio : brouillon (il ajoute le lien produit).<br>• Chaque publication reçoit un appel à l'action (boutique du profil, lien en bio + code promo, ou vitrine), ajouté à la description et en commentaire épinglé pour les publications directes.</div>
       <a class="btn" style="display:inline-block;text-decoration:none" href="https://n8n.wtng.online/webhook/tiktok-business-auth-start" target="_blank" rel="noopener">Connecter un compte TikTok</a>
     </div>
     <div class="card"><h2>Comptes connectés</h2><div class="list" id="a-list"></div></div>
@@ -299,7 +301,8 @@ function pubItem(p, actions = true) {
   if (actions && (p.statut === 'erreur' || p.statut === 'annulee')) btns.push(el('button', { class: 'btn ghost sm', onclick: () => relaunch(p) }, 'Relancer'));
   return el('div', { class: 'item' },
     el('div', { class: 'm' }, el('div', { class: 't' }, v ? v.titre : 'Vidéo supprimée'), el('div', { class: 's' }, sub),
-      p.erreur ? el('div', { class: 's', style: 'color:var(--err);white-space:normal' }, p.erreur) : null),
+      p.erreur ? el('div', { class: 's', style: 'color:var(--err);white-space:normal' }, p.erreur) : null,
+      p.comment_statut ? el('div', { class: 's', style: 'white-space:normal' }, 'Commentaire : ' + (p.comment_statut === 'epingle' ? 'publié et épinglé ✓' : p.comment_statut)) : null),
     el('div', { class: 'a' }, badge(p.statut), ...btns));
 }
 
@@ -328,7 +331,7 @@ function renderLib() {
         el('div', { class: 'tags' },
           v.duree_s ? el('span', { class: 'tag' }, Math.round(v.duree_s) + ' s') : null,
           v.is_ai_generated ? el('span', { class: 'tag' }, 'IA') : null,
-          v.plans_reels ? el('span', { class: 'tag gold' }, 'Plans réels') : null,
+          v.plans_reels ? el('span', { class: 'tag gold' }, 'En mouvement') : el('span', { class: 'tag' }, 'Statique'),
           v.produit ? el('span', { class: 'tag' }, v.produit) : null),
         el('div', { class: 'row', style: 'gap:6px' },
           el('button', { class: 'btn sm', onclick: () => { route('plan'); $('#p-video').value = v.id; checkPlan(); } }, 'Planifier'),
@@ -392,19 +395,40 @@ function renderPlanForm() {
   if (!$('#p-date').value) $('#p-date').value = localInput(Date.now() + 15 * 60000);
   checkPlan();
 }
-function modeFor(c) { return c && c.role === 'affilie' && c.lien_bio_site ? 'direct' : 'brouillon'; }
+// miroir de la règle en base (gcm_mode_calc) — la base reste la référence
+function modeCalc(c, v, force) {
+  if (!c || !v) return null;
+  if (!v.plans_reels && c.role === 'affilie' && !c.lien_bio_site) return 'bloque';
+  if (c.role === 'marque' && force) return 'brouillon';
+  if (!v.plans_reels) return 'direct';
+  if (c.role === 'marque') return 'brouillon';
+  return c.lien_bio_site ? 'direct' : 'brouillon';
+}
+function ctaFor(c) {
+  if (!c) return '';
+  if (c.cta_texte && c.cta_texte.trim()) return c.cta_texte.trim();
+  if (c.role === 'marque') return "🛒 Disponible dans l'onglet Boutique de notre profil";
+  if (c.lien_bio_site) return '🔗 Lien dans ma bio' + (c.code_promo && c.code_promo.trim() ? ' — code promo ' + c.code_promo.trim() : '');
+  return '🛒 Disponible dans ma vitrine TikTok Shop';
+}
 function checkPlan() {
-  const acc = accById(+$('#p-acc').value), mode = modeFor(acc), v = vidById($('#p-video').value);
-  $('#p-modelabel').textContent = acc ? (mode === 'direct' ? 'Publication directe (public)' : 'Brouillon') : '—';
-  $('#p-modehelp').textContent = mode === 'direct'
-    ? 'Affilié avec lien en bio vers le site : la vidéo est publiée directement en PUBLIC.'
-    : (acc && acc.role === 'affilie'
-      ? 'Affilié sans lien en bio : la vidéo arrive en brouillon dans son app TikTok, il ajoute le lien produit de ta boutique puis publie.'
-      : 'Compte Collection Étoilée / compte lié : la vidéo arrive en brouillon dans l\'app ; tu ajoutes le lien produit si besoin puis publies.');
+  const acc = accById(+$('#p-acc').value), v = vidById($('#p-video').value);
+  $('#p-forcewrap').classList.toggle('hidden', !(acc && acc.role === 'marque'));
+  const mode = modeCalc(acc, v, acc && acc.role === 'marque' && $('#p-force').checked);
+  $('#p-modelabel').textContent = { direct: 'Publication directe (public)', brouillon: 'Brouillon', bloque: '⛔ Bloqué' }[mode] || '—';
+  const help = $('#p-modehelp'); help.className = 'note' + (mode === 'bloque' ? ' err' : '');
+  help.textContent = !mode ? 'Choisis une vidéo et un compte.'
+    : mode === 'bloque' ? 'Vidéo statique vers un affilié sans lien en bio : il pourrait y ajouter un lien produit et être sanctionné. Choisis une vidéo en mouvement ou un autre compte.'
+    : mode === 'direct' ? (v.plans_reels ? 'Affilié avec lien en bio : publiée directement en PUBLIC, avec un commentaire épinglé qui renvoie vers sa bio.'
+                                         : 'Vidéo statique : publiée directement en PUBLIC, SANS lien produit, avec un commentaire épinglé qui renvoie vers la boutique ou la bio.')
+    : (acc.role === 'marque' ? 'Arrive en brouillon dans l\'app : tu peux ajouter le lien produit (vidéo en mouvement uniquement), puis publier.'
+                             : 'Arrive en brouillon dans l\'app de l\'affilié : il ajoute le lien produit de ta boutique, puis publie.');
+  $('#p-submit').disabled = $('#p-now').disabled = mode === 'bloque';
+  const cta = ctaFor(acc);
+  $('#p-cta').replaceChildren(...(cta ? [el('b', {}, 'Ajouté automatiquement à la description'), mode === 'direct' ? ' et en commentaire épinglé' : '', ' : ', cta] : []));
+  $('#p-cta').classList.toggle('hidden', !cta || !mode || mode === 'bloque');
   const w = [];
-  if (v && !v.plans_reels) w.push(mode === 'brouillon'
-    ? 'Attention : cette vidéo n\'est pas marquée « plans réels ». Le titulaire du compte ne doit PAS y ajouter de lien produit TikTok Shop (sanction pour contenu image fixe, comme le 08/11).'
-    : 'Vidéo sans « plans réels » : publiée sans lien produit, c\'est autorisé.');
+  if (v && !v.plans_reels && mode === 'brouillon') w.push('Vidéo STATIQUE en brouillon : n\'ajoute surtout PAS de lien produit dans l\'app (sanction −4 points).');
   if (v && v.is_ai_generated) w.push('Vidéo déclarée « générée par IA » : TikTok affichera l\'étiquette correspondante.');
   $('#p-warn').replaceChildren(...w.map(t => el('div', { class: 'note warn' }, t)));
   $('#p-count').textContent = $('#p-cap').value.length;
@@ -413,12 +437,14 @@ function checkPlan() {
 async function schedule(when) {
   const msg = $('#p-msg'), video_id = $('#p-video').value, compte_id = +$('#p-acc').value;
   if (!video_id || !compte_id) return note(msg, 'Choisis une vidéo et un compte.', 'warn');
-  const mode = modeFor(accById(compte_id));
-  if (mode === 'direct' && !confirm('Ce compte est en publication directe : la vidéo sera publiée en PUBLIC automatiquement. Continuer ?')) return;
-  const ins = await sb.from('gcm_publications').insert({ video_id, compte_id, legende: $('#p-cap').value, planifiee_le: when.toISOString() });
+  const acc = accById(compte_id), force = !!(acc && acc.role === 'marque' && $('#p-force').checked);
+  const mode = modeCalc(acc, vidById(video_id), force);
+  if (mode === 'bloque') return note(msg, 'Publication bloquée pour ce compte avec cette vidéo.', 'err');
+  if (mode === 'direct' && !confirm('Publication directe : la vidéo sera publiée en PUBLIC automatiquement. Continuer ?')) return;
+  const ins = await sb.from('gcm_publications').insert({ video_id, compte_id, force_brouillon: force, legende: $('#p-cap').value, planifiee_le: when.toISOString() });
   if (ins.error) return note(msg, 'Échec : ' + errMsg(ins.error), 'err');
   note(msg, `Publication programmée pour ${fmt(when)}. Le moteur passe toutes les 5 minutes.`, 'ok');
-  $('#p-cap').value = ''; checkPlan(); loadAll();
+  $('#p-cap').value = ''; $('#p-force').checked = false; checkPlan(); loadAll();
 }
 $('#f-plan').addEventListener('submit', (e) => {
   e.preventDefault(); const d = new Date($('#p-date').value);
@@ -459,15 +485,19 @@ function renderAcc() {
     const bioWrap = el('label', { class: 'chk', style: 'margin:0' }, bio, el('span', {}, 'Lien en bio vers le site'));
     const syncBio = () => bioWrap.classList.toggle('hidden', role.value !== 'affilie'); role.addEventListener('change', syncBio); syncBio();
     const actif = el('input', { type: 'checkbox' }); actif.checked = c.actif;
+    const promo = el('input', { type: 'text', value: c.code_promo || '', placeholder: 'Code promo (facultatif)', maxlength: 40, style: 'max-width:180px' });
+    const cta = el('input', { type: 'text', value: c.cta_texte || '', placeholder: 'Texte d\'appel à l\'action personnalisé (sinon automatique)', maxlength: 300 });
     const save = async () => {
-      const r = await sb.from('gcm_comptes').update({ label: label.value.trim() || null, role: role.value, lien_bio_site: role.value === 'affilie' && bio.checked, actif: actif.checked }).eq('id', c.id);
+      const r = await sb.from('gcm_comptes').update({ label: label.value.trim() || null, role: role.value, lien_bio_site: role.value === 'affilie' && bio.checked, actif: actif.checked, code_promo: promo.value.trim() || null, cta_texte: cta.value.trim() || null }).eq('id', c.id);
       toast(r.error ? errMsg(r.error) : 'Compte mis à jour.'); if (!r.error) loadAll();
     };
     return el('div', { class: 'item', style: 'flex-wrap:wrap' },
       c.avatar_url ? el('img', { class: 'av', src: c.avatar_url, alt: '' }) : el('div', { class: 'av' }),
       el('div', { class: 'm' }, el('div', { class: 't' }, accName(c)),
         el('div', { class: 's' }, [c.username ? '@' + c.username : 'Infos en cours de synchro…', c.followers != null ? c.followers + ' abonnés' : null, c.nb_videos != null ? c.nb_videos + ' vidéos' : null].filter(Boolean).join(' · '))),
-      el('div', { class: 'a', style: 'align-items:center' }, label, role, bioWrap, el('span', { class: 'badge ' + (modeFor(c) === 'direct' ? 'b-publiee' : 'b-brouillon_envoye') }, modeFor(c) === 'direct' ? 'Direct' : 'Brouillon'), el('label', { class: 'chk', style: 'margin:0' }, actif, el('span', {}, 'Actif')), el('button', { class: 'btn ghost sm', onclick: save }, 'Enregistrer')));
+      el('div', { class: 'a', style: 'align-items:center' }, label, role, bioWrap, promo, el('label', { class: 'chk', style: 'margin:0' }, actif, el('span', {}, 'Actif')), el('button', { class: 'btn ghost sm', onclick: save }, 'Enregistrer')),
+      el('div', { style: 'flex-basis:100%;display:flex;flex-direction:column;gap:6px;margin-top:6px' }, cta,
+        el('div', { class: 's muted', style: 'font-size:12px' }, 'Appel à l\'action actuel : ' + ctaFor(c) + ' · ' + (c.role === 'marque' ? 'Vidéo statique → direct · en mouvement → brouillon' : c.lien_bio_site ? 'Toujours en direct' : 'Statique → bloqué · en mouvement → brouillon'))));
   }));
 }
 
