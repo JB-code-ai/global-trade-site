@@ -179,11 +179,8 @@ textarea{min-height:96px;resize:vertical}
         <label for="p-acc">Compte TikTok</label><select id="p-acc" required></select>
         <div class="row">
           <div><label for="p-date">Date et heure (heure de Paris)</label><input id="p-date" type="datetime-local" required></div>
-          <div><label>Mode</label>
-            <div class="seg">
-              <label><input type="radio" name="p-mode" value="brouillon" checked><span>Brouillon</span></label>
-              <label><input type="radio" name="p-mode" value="direct"><span>Publication directe</span></label>
-            </div></div>
+          <div><label>Mode (automatique selon le compte)</label>
+            <div class="seg"><label style="cursor:default"><span id="p-modelabel" style="color:var(--text)">—</span></label></div></div>
         </div>
         <div id="p-modehelp" class="note"></div>
         <label for="p-cap">Description</label>
@@ -201,7 +198,8 @@ textarea{min-height:96px;resize:vertical}
   <section data-view="acc" class="hidden">
     <h1>Comptes TikTok</h1>
     <div class="card">
-      <div class="note">Pour connecter un compte, connecte-toi d'abord à <b>ce compte</b> sur TikTok (app ou tiktok.com), puis clique sur le bouton ci-dessous et accepte l'autorisation.</div>
+      <div class="note">Pour connecter un compte, connecte-toi d'abord à <b>ce compte</b> sur TikTok (app ou tiktok.com), puis clique sur le bouton ci-dessous et accepte l'autorisation. Un nouveau compte arrive comme <b>affilié sans lien en bio</b> (brouillon) : règle-le ensuite ci-dessous.</div>
+      <div class="note"><b>Règles de publication :</b> Collection Étoilée et ses comptes liés (5 max) → brouillon · Affilié avec lien en bio vers le site → publication directe · Affilié sans lien en bio → brouillon (il ajoute le lien produit de ta boutique).</div>
       <a class="btn" style="display:inline-block;text-decoration:none" href="https://n8n.wtng.online/webhook/tiktok-business-auth-start" target="_blank" rel="noopener">Connecter un compte TikTok</a>
     </div>
     <div class="card"><h2>Comptes connectés</h2><div class="list" id="a-list"></div></div>
@@ -394,13 +392,19 @@ function renderPlanForm() {
   if (!$('#p-date').value) $('#p-date').value = localInput(Date.now() + 15 * 60000);
   checkPlan();
 }
+function modeFor(c) { return c && c.role === 'affilie' && c.lien_bio_site ? 'direct' : 'brouillon'; }
 function checkPlan() {
-  const mode = ($('input[name=p-mode]:checked') || {}).value, v = vidById($('#p-video').value);
+  const acc = accById(+$('#p-acc').value), mode = modeFor(acc), v = vidById($('#p-video').value);
+  $('#p-modelabel').textContent = acc ? (mode === 'direct' ? 'Publication directe (public)' : 'Brouillon') : '—';
   $('#p-modehelp').textContent = mode === 'direct'
-    ? 'Publiée directement en PUBLIC, sans passer par l\'app. Aucun lien produit ne pourra être ajouté automatiquement.'
-    : 'La vidéo arrive dans la boîte de réception TikTok du compte. Tu ajoutes le lien produit si besoin, choisis la visibilité, puis publies depuis l\'app.';
+    ? 'Affilié avec lien en bio vers le site : la vidéo est publiée directement en PUBLIC.'
+    : (acc && acc.role === 'affilie'
+      ? 'Affilié sans lien en bio : la vidéo arrive en brouillon dans son app TikTok, il ajoute le lien produit de ta boutique puis publie.'
+      : 'Compte Collection Étoilée / compte lié : la vidéo arrive en brouillon dans l\'app ; tu ajoutes le lien produit si besoin puis publies.');
   const w = [];
-  if (v && !v.plans_reels) w.push('Cette vidéo n\'est pas marquée « plans réels » : ne lui ajoute PAS de lien produit TikTok Shop (risque de sanction pour contenu image fixe).');
+  if (v && !v.plans_reels) w.push(mode === 'brouillon'
+    ? 'Attention : cette vidéo n\'est pas marquée « plans réels ». Le titulaire du compte ne doit PAS y ajouter de lien produit TikTok Shop (sanction pour contenu image fixe, comme le 08/11).'
+    : 'Vidéo sans « plans réels » : publiée sans lien produit, c\'est autorisé.');
   if (v && v.is_ai_generated) w.push('Vidéo déclarée « générée par IA » : TikTok affichera l\'étiquette correspondante.');
   $('#p-warn').replaceChildren(...w.map(t => el('div', { class: 'note warn' }, t)));
   $('#p-count').textContent = $('#p-cap').value.length;
@@ -409,9 +413,9 @@ function checkPlan() {
 async function schedule(when) {
   const msg = $('#p-msg'), video_id = $('#p-video').value, compte_id = +$('#p-acc').value;
   if (!video_id || !compte_id) return note(msg, 'Choisis une vidéo et un compte.', 'warn');
-  const mode = $('input[name=p-mode]:checked').value;
-  if (mode === 'direct' && !confirm('Publication directe : la vidéo sera publiée en PUBLIC automatiquement. Continuer ?')) return;
-  const ins = await sb.from('gcm_publications').insert({ video_id, compte_id, mode, legende: $('#p-cap').value, planifiee_le: when.toISOString() });
+  const mode = modeFor(accById(compte_id));
+  if (mode === 'direct' && !confirm('Ce compte est en publication directe : la vidéo sera publiée en PUBLIC automatiquement. Continuer ?')) return;
+  const ins = await sb.from('gcm_publications').insert({ video_id, compte_id, legende: $('#p-cap').value, planifiee_le: when.toISOString() });
   if (ins.error) return note(msg, 'Échec : ' + errMsg(ins.error), 'err');
   note(msg, `Publication programmée pour ${fmt(when)}. Le moteur passe toutes les 5 minutes.`, 'ok');
   $('#p-cap').value = ''; checkPlan(); loadAll();
@@ -450,17 +454,20 @@ function renderAcc() {
   if (!state.comptes.length) return box.replaceChildren(el('div', { class: 'empty' }, 'Aucun compte connecté.'));
   box.replaceChildren(...state.comptes.map(c => {
     const label = el('input', { type: 'text', value: c.label || '', placeholder: 'Nom interne', maxlength: 60, style: 'max-width:220px' });
-    const role = el('select', { style: 'max-width:140px' }, el('option', { value: 'marque' }, 'Marque'), el('option', { value: 'affilie' }, 'Affilié')); role.value = c.role;
+    const role = el('select', { style: 'max-width:190px' }, el('option', { value: 'marque' }, 'Marque / compte lié'), el('option', { value: 'affilie' }, 'Affilié')); role.value = c.role;
+    const bio = el('input', { type: 'checkbox' }); bio.checked = c.lien_bio_site;
+    const bioWrap = el('label', { class: 'chk', style: 'margin:0' }, bio, el('span', {}, 'Lien en bio vers le site'));
+    const syncBio = () => bioWrap.classList.toggle('hidden', role.value !== 'affilie'); role.addEventListener('change', syncBio); syncBio();
     const actif = el('input', { type: 'checkbox' }); actif.checked = c.actif;
     const save = async () => {
-      const r = await sb.from('gcm_comptes').update({ label: label.value.trim() || null, role: role.value, actif: actif.checked }).eq('id', c.id);
+      const r = await sb.from('gcm_comptes').update({ label: label.value.trim() || null, role: role.value, lien_bio_site: role.value === 'affilie' && bio.checked, actif: actif.checked }).eq('id', c.id);
       toast(r.error ? errMsg(r.error) : 'Compte mis à jour.'); if (!r.error) loadAll();
     };
     return el('div', { class: 'item', style: 'flex-wrap:wrap' },
       c.avatar_url ? el('img', { class: 'av', src: c.avatar_url, alt: '' }) : el('div', { class: 'av' }),
       el('div', { class: 'm' }, el('div', { class: 't' }, accName(c)),
         el('div', { class: 's' }, [c.username ? '@' + c.username : 'Infos en cours de synchro…', c.followers != null ? c.followers + ' abonnés' : null, c.nb_videos != null ? c.nb_videos + ' vidéos' : null].filter(Boolean).join(' · '))),
-      el('div', { class: 'a', style: 'align-items:center' }, label, role, el('label', { class: 'chk', style: 'margin:0' }, actif, el('span', {}, 'Actif')), el('button', { class: 'btn ghost sm', onclick: save }, 'Enregistrer')));
+      el('div', { class: 'a', style: 'align-items:center' }, label, role, bioWrap, el('span', { class: 'badge ' + (modeFor(c) === 'direct' ? 'b-publiee' : 'b-brouillon_envoye') }, modeFor(c) === 'direct' ? 'Direct' : 'Brouillon'), el('label', { class: 'chk', style: 'margin:0' }, actif, el('span', {}, 'Actif')), el('button', { class: 'btn ghost sm', onclick: save }, 'Enregistrer')));
   }));
 }
 
